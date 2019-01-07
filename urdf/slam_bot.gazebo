@@ -23,9 +23,9 @@
     </gazebo>
 
     <gazebo reference="robot_footprint">
-		<material>Gazebo/Green</material>
-		<turnGravityOff>false</turnGravityOff>
-	</gazebo>
+        <material>Gazebo/Green</material>
+        <turnGravityOff>false</turnGravityOff>
+    </gazebo>
 
 
     <!-- ros_control plugin -->
@@ -105,7 +105,7 @@
             <plugin name="camera_controller" filename="libgazebo_ros_openni_kinect.so">
                 <alwaysOn>true</alwaysOn>
                 <updateRate>10.0</updateRate>
-                <cameraName>slam_bot/camera1</cameraName>
+                <cameraName>camera</cameraName>
                 <frameName>camera_rgbd_frame</frameName>
                 <imageTopicName>rgb/image_raw</imageTopicName>
                 <depthImageTopicName>depth/image_raw</depthImageTopicName>
@@ -158,7 +158,7 @@
                 </noise>
             </ray>
             <plugin name="gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_laser.so">
-                <topicName>/slam_bot/laser/scan</topicName>
+                <topicName>/scan</topicName>
                 <frameName>hokuyo</frameName>
             </plugin>
         </sensor>

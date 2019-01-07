@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <launch>
     <!-- Arguments for launch file with defaults provided -->
     <arg name="database_path" default="rtabmap.db"/>
-    <arg name="rgb_topic" default="/slam_bot/camera1/rgb/image_raw"/>
-    <arg name="depth_topic" default="/slam_bot/camera1/depth/image_raw"/>
-    <arg name="camera_info_topic" default="/slam_bot/camera1/rgb/camera_info"/>
+    <arg name="rgb_topic" default="/camera/rgb/image_raw"/>
+    <arg name="depth_topic" default="/camera/depth/image_raw"/>
+    <arg name="camera_info_topic" default="/camera/rgb/camera_info"/>
 
 
     <!-- Mapping Node -->
@@ -20,7 +19,7 @@
             <param name="subscribe_scan" type="bool" value="true"/>
 
             <!-- RTAB-Map Inputs -->
-            <remap from="scan" to="/slam_bot/laser/scan"/>
+            <remap from="scan" to="/scan"/>
             <remap from="rgb/image" to="$(arg rgb_topic)"/>
             <remap from="depth/image" to="$(arg depth_topic)"/>
             <remap from="rgb/camera_info" to="$(arg camera_info_topic)"/>
@@ -35,10 +34,10 @@
             <param name="Reg/Force3DoF" type="string" value="true"/>
 
             <!-- Loop Closure Detection -->
-            <!-- 0=SURF 1=SIFT 2=ORB 3=FAST/FREAK 4=FAST/BRIEF 5=GFTT/FREAK 6=GFTT/BRIEF 7=BRISK 8=GFTT/ORB                 9=KAZE →
-           <param name="Kp/DetectorStrategy" type="string" value="0"/>
+            <!-- 0=SURF 1=SIFT 2=ORB 3=FAST/FREAK 4=FAST/BRIEF 5=GFTT/FREAK 6=GFTT/BRIEF 7=BRISK 8=GFTT/ORB9=KAZE -->
+            <param name="Kp/DetectorStrategy" type="string" value="0"/>
 
-           <!-- Maximum visual words per image (bag-of-words) -->
+            <!-- Maximum visual words per image (bag-of-words) -->
             <param name="Kp/MaxFeatures" type="string" value="400"/>
 
             <!-- Used to extract more or less SURF features -->
