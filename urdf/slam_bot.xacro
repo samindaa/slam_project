@@ -197,7 +197,7 @@
         <origin rpy="-1.5707 0 0" xyz="-0.1 -0.13 0"/>
     </joint>
 
-    <!-- Camera joint -->
+    <!-- Camera link -->
     <joint name="camera_joint" type="fixed">
         <origin xyz="0.125 0 0.125" rpy="0 0 0"/>
         <parent link="chassis"/>
@@ -229,6 +229,14 @@
             <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6"/>
         </inertial>
     </link>
+    
+    <link name="camera_rgbd_frame"/>
+    
+    <joint name="camera_rgbd_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <parent link="camera"/>
+        <child link="camera_rgbd_frame"/>
+    </joint>
 
 
     <!-- Hokuyo joint -->
