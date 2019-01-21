@@ -8,7 +8,29 @@ Simultaneous Localization and Mapping (SLAM), a robot acquires a map of the envi
 ### Installation Instructions
 
 Please follow the [instructions](https://github.com/samindaa/RoboND-Localization-Project)
-to setup ROS Kinetic environment. 
+to setup ROS Kinetic environment.
+
+### rtabmap.db (for the supplied environment only)
+
+The rtabmap.db for the project is available from:
+
+```sh 
+wget https://storage.googleapis.com/saminda-us-central1/udacity/rtabmap.db
+```
+
+Since rtabmap.db file is 262M, it is not uploaded to slam_project git repository. 
+
+1. To use with rtabmap-databaseViewer:
+
+ ```sh 
+rtabmap-databaseViewer local-path-to-rtabmap.db
+```
+
+2. To use with localization.launch:
+
+```sh 
+roslaunch slam_project localization.launch database_path:=local-path-to-rtabmap.db
+```
 
 ### Run the Project
 
