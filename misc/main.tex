@@ -22,19 +22,19 @@
 
 \author{Saminda Abeyruwan}
 
-\markboth{Inference project, Robotic Nanodegree, Udacity}%
+\markboth{Map My World Robot, Robotic Nanodegree, Udacity}%
 {}
 \IEEEtitleabstractindextext{%
 
 \begin{abstract}
-Simultaneous Localization and Mapping (SLAM), a robot acquires a map of the environment and simultaneously localize itself relative to the map. Each robot platform contains a set of constraints on sensors, locomotion, and compute power,  SLAM approaches that address these constraints provide real-time  benefits to practitioners.  Real-Time Appearance-Based Mapping (RTAB-Map) is a an open source loop closure detection with memory management library that addresses these limitations for long-term and large scale environment mapping. This project evaluates RTAB-Map 2D and 3D mapping and localization modalities in two Gazebo environments using a RGB-D camera mounted on a four-wheeled robot.  
+Simultaneous Localization and Mapping (SLAM), a robot acquires a map of the environment and simultaneously localize itself relative to the map. Each robot platform contains a set of constraints on sensors, locomotion, and compute power.  SLAM approaches that address these constraints provide real-time  benefits to practitioners.  Real-Time Appearance-Based Mapping (RTAB-Map) is a an open source loop closure detection with memory management library that addresses these limitations for long-term and large scale environment mapping. This project evaluates RTAB-Map 2D and 3D mapping and localization modalities in two Gazebo environments using a RGB-D camera mounted on a four-wheeled robot.  
 %An abstract is meant to be a summary of all of the relevant points in your presented work. It is designed to present a high-level overview of the report, providing just enough detail to convey the necessary information The abstract may often mention a one-sentence summary of the results.  While the type of voice chosen for the paper (active or passive) may be up for debate, you should avoid the use of “I” and “me” in the report. It usually is kept to a length of 150 - 200 words. 
 %Example: You should not write, “I present two different neural networks for classifying my data”. Instead, you should try to say, “Two different neural networks are used for classification”.
 \end{abstract}
 
 % Note that keywords are not normally used for peerreview papers.
 \begin{IEEEkeywords}
-Robot, IEEEtran, Udacity, \LaTeX, RTAB-Map.
+Robot, IEEEtran, Udacity, \LaTeX, SLAM, RTAB-Map.
 \end{IEEEkeywords}}
 
 
@@ -105,18 +105,25 @@ There are two versions of the SLAM problem. The first is known as \textit{online
       \label{fig:full_slam}
 \end{figure}
 
-\begin{enumerate} \item SLAM with extended Kalman filter: which applied the EKF to online SLAM using maximum likelihood data association. The map is feature based and the landmarks are usually limited, and requires significant efforts to detect features. With known correspondence, the updates are time quadratic in the number of landmarks in the map.  \item The GraphSLAM algorithm: which addresses the full SLAM problem. It calculates posterior over full robot path and map, thus, it is a batch algorithm. GraphSLAM constructs a graph of soft constraints, i.e., measurement are mapped into edges that represent nonlinear constraints between poses and sensed features, while motion commands are mapped into soft constraints between consecutive poses. The graph is sparse, and maximizing the sum of the constraints via maximum likelihood estimates the robot path and the map.  \item The sparse extended information filter (SEIF): which is similar to GraphSLAM, however, it integrates out past poses, which resulted in an online SLAM. This is an efficient with information representation and integrating out past poses. To achieve online SLAM, SEIF makes number of approximations, which results in less accurate that GraphSLAM or the EKF.  \item The FastLAM algorithm: is a particle filter approach to SLAM problem. FastSLAM maintains a set of particles, which contains a sampled robot path. It also contains a map, where each feature of the map is represented by it own local Gaussian. This representation requires space linear in the size of the map, and linear in the number of particles. The update in the algorithm follows the conventional particle filter, and updates are preformed online, thus, it solves the online SLAM problem (for further discussion, please refer to chapters 11, 12, and 13 in reference \cite{Thrun:2005:PR:1121596}.\end{enumerate} 
+\begin{enumerate} \item SLAM with extended Kalman filter: that applies the EKF to online SLAM using maximum likelihood data association. The map is feature based and the landmarks are usually limited, and requires significant efforts to detect features. With known correspondence, the updates are time quadratic in the number of landmarks in the map.  \item The GraphSLAM algorithm: which addresses the full SLAM problem. It calculates posterior over full robot path and map, thus, it is a batch algorithm. GraphSLAM constructs a graph of soft constraints, i.e., measurement are mapped into edges that represent nonlinear constraints between poses and sensed features, while motion commands are mapped into soft constraints between consecutive poses. The graph is sparse, and maximizing the sum of the constraints via maximum likelihood estimates the robot path and the map.  \item The sparse extended information filter (SEIF): which is similar to GraphSLAM, however, it integrates out past poses, which resulted in an online SLAM. This is an efficient with information representation and integrating out past poses. To achieve online SLAM, SEIF makes number of approximations, which results in less accurate that GraphSLAM or the EKF.  \item The FastLAM algorithm: is a particle filter approach to SLAM problem. FastSLAM maintains a set of particles, which contains a sampled robot path. It also contains a map, where each feature of the map is represented by it own local Gaussian. This representation requires space linear in the size of the map, and linear in the number of particles. The update in the algorithm follows the conventional particle filter, and updates are preformed online, thus, it solves the online SLAM problem (for further discussion, please refer to chapters 11, 12, and 13 in the reference \cite{Thrun:2005:PR:1121596}.\end{enumerate} 
 
-This project uses RTAB-Map, an open source loop closure detection with memory management, is a graph-based SLAM approach that has been integrated to ROS as the  \textit{rtabmap\_ros}. Fig. \ref{fig:rtabmap_ros} shows the block diagram of rtabmap ROS node.  A RGD-B camera, odometry, and laser scan has been used as the external inputs to RTAB-Map. The ROS package, \textit{depthimage\_to\_laserscan} has been used to obtain the laser scan from RGB-D camera.  
+This project uses RTAB-Map, an open source loop closure detection with memory management, is a graph-based SLAM approach that has been integrated to ROS as the  \textit{rtabmap\_ros}. Fig. \ref{fig:rtabmap_ros} shows the block diagram of rtabmap ROS node.  A RGB-D camera, odometry, and laser scan has been used as the external inputs to RTAB-Map. The ROS package, \textit{depthimage\_to\_laserscan} has been used to obtain the laser scan from the RGB-D camera.  
 
 RTAB-MAP, structure of the map is a graph with linked nodes. After sensor synchronization, the short-term memory (STM) creates a node memorizing the odometry pose, and additional sensor data, e.g., visual words for loop closure and proximity detection, and local occupancy grid for global map assembly. Nodes are created at a fixed rate (how much data created from nodes overlap each other). Links are added in the STM between consecutive nodes with odometry transformation. Loop closure and proximity links are added through loop closure detection or proximity detection. All the links are used as constraints for graph optimization. When there is a new loop closure or proximity link added to the graph, graph optimization propagates the computed error to the whole graph, to decrease odometry drift. With the graph optimized, OctoMap, and 2D occupancy grid outputs are assembled and published to external packages. RTAB-Map memory management runs on top of the graph, which limits the size of the graph such that long-term online SLAM is achieved in large environment. This is implemented via a working memory (WM) and a long-term memory (LTM). More information about the operations, please refer to \cite{labbertab}.
 
-\begin{figure*}[thpb]
+\begin{figure}[thpb]
+      \centering
+      \includegraphics[width=0.5\linewidth]{sb_w.jpeg}
+      \caption{Visual appearance of the mobile robot.}
+      \label{fig:sb}
+\end{figure}
+
+\begin{figure}[thpb]
       \centering
       \includegraphics[width=\linewidth]{rtabmap_ros}
       \caption{Block diagram of \textit{rtabmap\_ros}  node. The orignal figure is available in \cite{labbertab} (Figure 1).}
       \label{fig:rtabmap_ros}
-\end{figure*}
+\end{figure}
 
 
 %\texttt{•}
@@ -138,20 +145,98 @@ RTAB-MAP, structure of the map is a graph with linked nodes. After sensor synchr
 %\end{enumerate}
 
 \section{Scene and Robot Configuration}
+
+The mobile robot is developed using Xacro\footnote{\url{http://wiki.ros.org/xacro}} and Gazebo\footnote{\url{http://gazebosim.org/tutorials/?tut=ros_urdf}} definitions. The robot is constructed  with four-wheels, a Hokuyo laser scanner\footnote{\url{http://gazebosim.org/tutorials?tut=ros_gzplugins}}, and a RGB-D camera attached the chassis. The chassis is a box 0.2, 0.3, 0.1, while the wheels are cylinders with radius 0.05 and length 0.05.  The moment of inertia for each object shape has been calculated explicitly. A Skid Steering Drive has been attached to front/back left/right wheels and configured via Gazebo. Fig. \ref{fig:sb} shows the structure of the mobile robot, and the visual appearance is given in Fig. \ref{fig:saminda_bot}. An addition frame, \textit{camera\_rbgd\_frame}, has been added to for the depth image frame. Even though the robot is equipped with  Hokuyo laser scanner, the ROS package \textit{depthimage\_to\_laserscan} has been used to convert the depth image to laser scan, and the project uses this topic instead (Fig. \ref{fig:rosgraph}). 
+
+\begin{figure}[thpb]
+      \centering
+      \includegraphics[width=\linewidth]{frames.pdf}
+      \caption{Structure of mobile robot.}
+      \label{fig:saminda_bot}
+\end{figure}
+
+\begin{figure}[thpb]
+      \centering
+      \includegraphics[width=\linewidth]{rosgraph_w}
+      \caption{ROS graph for environment mapping.}
+      \label{fig:rosgraph}
+\end{figure}
+
+There are two worlds for mapping and localization: \begin{enumerate*} \item Kitchen and Dinning world (KAD): which is the baseline environment provided to the project (Fig. \ref{fig:kad}), and \item Apartment world (APT): which has been developed using Gazebo's building editor and  objects (Fig. \ref{fig:apt}). \end{enumerate*} 
+
+\begin{figure}[thpb]
+      \centering
+      \includegraphics[width=\linewidth]{kad_w}
+      \caption{Kitchen and dinning world.}
+      \label{fig:kad}
+\end{figure}
+
+\begin{figure}[thpb]
+      \centering
+      \includegraphics[width=\linewidth]{apt_w}
+      \caption{Apartment world.}
+      \label{fig:apt}
+\end{figure}
+
 %This section should discuss the data set. Items to include are the number of images, size of the images, the types of images (RGB, Grayscale, etc.), how these images were collected (including the method). Providing this information is critical if anyone would like to replicate your results. After all, the intent of reports such as these are to convey information and build upon ideas so you want to ensure others can validate your process.
 %Justifying why you gathered data in this way is a helpful point, but sometimes this may be omitted here if the problem has been stated clearly in the introduction.
 %It is a great idea here to have at least one or two images showing what your data looks like for the reader to visualize.
 
 \section{Results}
+
+The results are shown herewith based on the images captures from Rviz and \textit{rtabmap-databaseViewer}. The robot is placed on the map (0, 0, 0) coordinates and teleop module has been used to move the robot. Fig. \ref{fig:kad_3d} show the partial 3D map, and Fig. \ref{fig:kad_2d} shows the 2D view for the KAD world. Similarly, 3D and 2D maps for APT world is shown in Fig. \ref{fig:apt_3d} and Fig. \ref{fig:apt_2d} respectively.  The robot has completed as least two paths in both world to obtain the final results.  Fig. \ref{fig:kad_loc} shows a snapshot of the localization for the KAD world.  
+
+\begin{figure}[thpb]
+      \centering
+      \includegraphics[width=\linewidth]{kad_3d_w}
+      \caption{Kitchen and dinning world: partial 3D map.}
+      \label{fig:kad_3d}
+\end{figure}
+
+\begin{figure}[thpb]
+      \centering
+      \includegraphics[width=\linewidth]{kad_2d_w}
+      \caption{Kitchen and dinning world: 2D map from RViz.}
+      \label{fig:kad_2d}
+\end{figure}
+
+\begin{figure}[thpb]
+      \centering
+      \includegraphics[width=\linewidth]{kad_loc_w}
+      \caption{Kitchen and dinning world: robot is configured to localize using the database.}
+      \label{fig:kad_loc}
+\end{figure}
+
+\begin{figure}[thpb]
+      \centering
+      \includegraphics[width=\linewidth]{apt_3d_w}
+      \caption{Apartment world: partial 3D map.}
+      \label{fig:apt_3d}
+\end{figure}
+
+\begin{figure}[thpb]
+      \centering
+      \includegraphics[width=\linewidth]{apt_2d_w}
+      \caption{Apartment world: 2D map from RViz.}
+      \label{fig:apt_2d}
+\end{figure}
+
+
 %This is typically the hardest part of the report for many. You want to convey your results in an unbiased fashion. If you results are good, you can objectively note this. Similarly, you may do this if they are bad as well. You do not want to justify your results here with discussion; this is a topic for the next session. 
 %Present the results of your robotics project model and the model you used for the supplied data with the appropriate accuracy and inference time
 %For demonstrating your results, it is incredibly useful to have some charts, tables, and/or graphs for the reader to review. This makes ingesting the information quicker and easier.
 
 \section{Discussion}
+
+The rtabmap ROS package has mapped both worlds and the robot has been localized on the map. The teleop module has been used for manual navigation. The mapping module has been configured to use depth image based scan. As a future work, Hokuyo scan can be used instead. It has been observed that ratabmap requires a feature rich environment for loop closures. If the feature were not distinct, or the robot moves faster, it has been observed that when a loop closure is found, the graph optimization distorts the mapped environment significantly. The APT world contains more open space than the KAD world, which may have made the mapping complicated at times. 
+
 %This is the only section of the report where you may include your opinion. However, make sure your opinion is based on facts. If your results are poor, make mention of what may be the underlying issues. If the results are good, why do you think this is the case? Again, avoid writing in the first person (i.e. Do not use words like “I” or “me”). If you really find yourself struggling to avoid the word “I” or “me”; sometimes, this can be avoid with the use of the word “one”. As an example: instead of : “I think the accuracy on my dataset is low because the images are too small to show the necessary detail” try: “one may believe the accuracy on the dataset is low because the images are too small to show the necessary detail”. They say the same thing, but the second avoids the first person. 
 %Reflect on which is more important, inference time or accuracy, in regards to your robotic inference project.
 
 \section{Conclusion / Future work}
+
+The project evaluates a solution to the online SLAM problem using RTAB-Map. It has been shown that the robots were successfully mapped and localized on the worlds. All tasks have been experimented in simulation.  It is also interesting  to integrate the packages on real hardware and tune for the real world constrains. This project uses RGB-D camera, though, RTAB-Map can be configured to use point cloud devices or stereo images as external inputs. 
+
 %This section is intended to summarize your report. Your summary should include a recap of the results, did this project achieve what you attempted, and is this a commercially viable product? 
 %For Future work,address areas of work that you may not have addressed in your report as possible next steps. For future work, this could be due to time constraints, lack of currently developed methods / technology, and areas of application outside of your current implementation. Again, avoid the use of the first-person.
 
